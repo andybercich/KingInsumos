@@ -1,0 +1,13 @@
+.delete{
+    color: rgba(255, 8, 8, 0.46);
+    transition: 450ms;
+    font-size: 1.5rem;
+    border: 2px solid rgba(255, 8, 8, 0.46) ;
+    border-radius: 8px;
+}
+
+.delete:hover{
+    color: rgb(255, 0, 0);
+    cursor: pointer;
+    border: 2px solid rgb(255, 0, 0) ;
+}

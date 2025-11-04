@@ -1,0 +1,74 @@
+.main{
+    width:100%;
+    margin-top: 14vh;
+    height: 75vh;
+
+}
+
+.subHeader{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+
+
+.select{
+
+    height: 1.8rem;
+    width: 18rem;
+    margin-left: 1.5rem;
+    font-size: 1rem;
+    padding-left: 15px;
+    font-family: 'Poppins';
+    font-weight: 100;
+
+
+}
+
+.buttonsCategorias{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-left: 15px;
+}
+
+.buttonAgregarProduct{
+
+    width: 100%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    padding-right: 35px;
+
+}
+
+.agregarProduct{
+    border: 0.8px solid #266F26;
+    width: 9.3rem;
+    height: 1.8rem;
+    color: #266F26;
+    background-color: transparent;
+    border-radius: 4px;
+    transition: 450ms;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2); 
+
+}
+
+.containerSearch{
+    width: 170%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.agregarProduct:hover{
+
+    cursor: pointer;
+    color: #4fea4f;
+    border: 0.8px solid #4fea4f;
+    box-shadow: 0px 7px 10px rgba(0, 0, 0, 0.376); 
+}

@@ -1,0 +1,59 @@
+.card{
+    border-radius: 20px;
+    display: flex;
+    min-width: 100%;
+    max-width: 100%;
+    max-height: 2.5rem;
+    min-height: 2.5rem;
+    align-items: center;
+    border: 1px black solid;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.cardStock{
+
+    border-radius: 20px;
+    display: flex;
+    min-width: 100%;
+    max-width: 100%;
+    max-height: 2.5rem;
+    min-height: 2.5rem;
+    align-items: center;
+    background-color: rgba(255, 99, 71, 0.228);
+    border: 1px black solid;
+    justify-content: center;
+    align-items: center;
+
+}
+.titulos {
+    display: grid;
+    grid-template-columns: 0.5fr 2fr 2fr 0.5fr 0.5fr 1fr  ;
+    gap: 1rem;
+    width: 80%;
+    align-items: center;
+    
+}
+
+
+.titulos h3{
+    font-weight: 400;
+    font-size: 1.2rem;
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  width: 100%; 
+  display: block;   
+}
+
+.iconos{
+    width: 15%;
+    display: flex;
+    justify-content: center;
+    gap:2rem
+
+}

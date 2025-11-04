@@ -1,0 +1,55 @@
+.mainDiv{
+    margin-top: 1rem;
+    min-height: 50vh;
+    max-height: 50vh;
+}
+
+.containerProducts {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-height: 50vh;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+.containerProducts::-webkit-scrollbar {
+    height: 10px;
+    width: 5px;
+}
+
+.containerProducts::-webkit-scrollbar-track {
+    background: #c7c2c2;
+    border-radius: 1000px;
+}
+
+.containerProducts::-webkit-scrollbar-thumb {
+    background: #000000;
+    border-radius: 20px;
+}
+
+.containerProducts::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+.arrows{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: end;
+    font-size: 4vh;
+}
+  .notAlowed{
+    color: rgba(0, 0, 0, 0.414);
+    font-size: 5vh;
+  }
+.notAlowed:hover{
+    cursor: not-allowed;
+
+}
+
+.alowed{
+    color: rgba(0, 0, 0, 0.819);
+}
+.alowed:hover{
+    cursor: pointer;
+}

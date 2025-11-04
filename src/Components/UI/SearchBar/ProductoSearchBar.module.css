@@ -1,0 +1,20 @@
+.mainDiv{
+
+    width: 22rem;
+    background-color: rgba(0, 0, 0, 0.086);
+    border: 1px black solid;
+    border-radius: 8px;
+    gap: 3px;
+}
+
+.divImage{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainDiv:focus{
+    outline: none;
+    background-color: rgba(0, 0, 0, 0);
+}

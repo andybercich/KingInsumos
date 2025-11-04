@@ -1,0 +1,13 @@
+.icono{
+    color: #c01111;
+    font-size:30px; 
+    border-radius: 8px;
+    box-shadow: 0px 3px 50px rgba(255, 255, 255, 0.484);
+    transition: 400ms;
+  }
+  .icono:hover{
+    color: #ffffff;
+    background-color: #c04949;
+    cursor:pointer;
+    box-shadow: 0px 3px 50px rgba(255, 255, 255, 0.99);
+}

@@ -1,0 +1,15 @@
+.info{
+    color: rgb(102, 117, 230);
+    transition: 450ms;
+    border: 2px solid rgb(102, 117, 230);
+    font-size: 1.7rem;
+    border-radius: 8px;
+}
+
+.info:hover{
+
+    border: 2px solid rgb(56, 69, 169); ;
+
+    color: rgb(56, 69, 169);
+    cursor: pointer;
+}
