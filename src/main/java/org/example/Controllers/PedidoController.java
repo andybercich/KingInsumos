@@ -78,13 +78,20 @@ public class PedidoController extends BaseController<Pedido, Long, PedidoReposit
         }
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<List<PedidoDTO>> buscarPorClienteOContacto(@RequestParam String param) {
+        List<Pedido> pedidos = service.buscarPorClienteOContacto(param);
+        return ResponseEntity.ok(PedidoDTO.fromEntitys(pedidos));
+    }
+
+
     //GET localhost:8080/kinginsumos/pedido/findByRangoFechas?desde=2025-04-01T00:00:00&hasta=2025-04-16T23:59:59&page=0&size=10
     @GetMapping("/findByRangoFechas")
     public ResponseEntity<PaginaPedidoDTO> getPedidosPorRango(
             @RequestParam("desde") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime desde,
             @RequestParam("hasta") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime hasta,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size) {
 
         try {
             PaginaPedidoDTO result = service.findByFechaPedidoBetween(desde, hasta, page, size);

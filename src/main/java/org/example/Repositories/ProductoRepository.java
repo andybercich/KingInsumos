@@ -13,8 +13,21 @@ import java.util.List;
 public interface ProductoRepository extends BaseRepository<Producto, Long>{
 
 
-    @Query("SELECT p FROM Producto p WHERE CAST(p.codigo AS string) LIKE %:param% OR LOWER(p.nombre) LIKE LOWER(CONCAT('%', :param, '%'))")
-    List<Producto> buscarPorCodigoONombre(@Param("param") String param);
+    @Query("""
+    SELECT p FROM Producto p
+    WHERE 
+        CAST(p.codigo AS string) LIKE CONCAT('%', :param, '%')
+        OR (
+            LOWER(p.nombre) LIKE LOWER(CONCAT('%', :word1, '%')) 
+            AND LOWER(p.nombre) LIKE LOWER(CONCAT('%', :word2, '%'))
+        )
+""")
+    List<Producto> buscarPorCodigoONombreAvanzado(
+            @Param("param") String param,
+            @Param("word1") String word1,
+            @Param("word2") String word2
+    );
+
 
     List<Producto> findByCategoriaDenominacionContainingIgnoreCase(String denominacion);
 

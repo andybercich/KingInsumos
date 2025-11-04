@@ -23,7 +23,11 @@ public class EnvioController extends BaseController<Envio,Long, EnvioRepository,
     }
 
 
-
+    @GetMapping("/buscar")
+    public ResponseEntity<List<EnvioDTO>> buscarPorClienteOContacto(@RequestParam String param) {
+        List<Envio> envios = service.buscarPorClienteOContacto(param);
+        return ResponseEntity.ok(EnvioDTO.fromEntitys(envios));
+    }
 
     @PostMapping("/create")
     public ResponseEntity<EnvioDTO> creates (@Valid @RequestBody Envio envio){
@@ -92,8 +96,8 @@ public class EnvioController extends BaseController<Envio,Long, EnvioRepository,
     public ResponseEntity<PaginaEnvioDTO> getEnviosByRango(
             @RequestParam("desde") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime desde,
             @RequestParam("hasta") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime hasta,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size) {
 
         try {
             PaginaEnvioDTO result = service.findByFechaEnvioBetween(desde, hasta, page, size);

@@ -86,9 +86,6 @@ public class Envio extends Base{
                     .map(detalle -> detalle.getSubTotal())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            if (adelanto!=null && apartado){
-                total = total.subtract(adelanto);
-            }
             this.totalSinEnvio = total;
         }
 

@@ -24,7 +24,8 @@ public class ProductoExcelService {
 
 
             Row headerRow = sheet.createRow(0);
-            String[] headers = {"Código", "Nombre", "Stock", "Descripción", "Precio Compra", "Precio Venta", "Denominación Categoría"};
+            String[] headers = {"Código", "Nombre","Unidad" ,"Stock", "Descripción", "Precio Compra", "Precio Venta",
+                    "Denominación Categoría"};
             for (int i = 0; i < headers.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -40,11 +41,15 @@ public class ProductoExcelService {
                 Row row = sheet.createRow(rowIdx++);
                 row.createCell(0).setCellValue(producto.getCodigo());
                 row.createCell(1).setCellValue(producto.getNombre());
-                row.createCell(2).setCellValue(producto.getStock());
-                row.createCell(3).setCellValue(producto.getDescripcion());
-                row.createCell(4).setCellValue(producto.getPrecioCompra().doubleValue()); // Asumiendo que precioCompra es BigDecimal
-                row.createCell(5).setCellValue(producto.getPrecioVenta().doubleValue());  // Asumiendo que precioVenta es BigDecimal
-                row.createCell(6).setCellValue(producto.getCategoria().getDenominacion()); // Asumiendo que la categoría tiene la propiedad 'denominacion'
+                row.createCell(2).setCellValue(producto.getMedida()+" "+producto.getUnidad());
+                row.createCell(3).setCellValue(producto.getStock());
+                row.createCell(4).setCellValue(producto.getDescripcion());
+                row.createCell(5).setCellValue(producto.getPrecioCompra().doubleValue()); // Asumiendo que
+                // precioCompra es BigDecimal
+                row.createCell(6).setCellValue(producto.getPrecioVenta().doubleValue());  // Asumiendo que
+                // precioVenta es BigDecimal
+                row.createCell(7).setCellValue(producto.getCategoria().getDenominacion()); // Asumiendo que la
+                // categoría tiene la propiedad 'denominacion'
             }
 
             workbook.write(out);

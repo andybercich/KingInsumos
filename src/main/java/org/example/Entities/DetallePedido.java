@@ -45,19 +45,26 @@ public class DetallePedido extends Base{
     @JoinColumn(name = "envio_id")
     private Envio envio;
 
-    public void calculateSubTotal(){
+    public void calculateSubTotal() {
         BigDecimal subtotal = BigDecimal.ZERO;
         this.precioUnitario = producto.getPrecioVenta();
-        BigDecimal cantidadBD = new BigDecimal(cantidad);
+        BigDecimal cantidadBD = BigDecimal.valueOf(cantidad);
         BigDecimal porcentajeAgregadoBD = BigDecimal.valueOf(porcentajeAgregado);
         BigDecimal porcentajeDescontadoBD = BigDecimal.valueOf(porcentajeDescontado);
+        BigDecimal cien = BigDecimal.valueOf(100);
 
-        subtotal = precioUnitario.multiply(cantidadBD)
-                    .subtract(precioUnitario.multiply(porcentajeDescontadoBD).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP))
-                    .add(precioUnitario.multiply(porcentajeAgregadoBD).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+        BigDecimal base = precioUnitario.multiply(cantidadBD);
+
+        BigDecimal descuentoCalculado = base.multiply(porcentajeDescontadoBD)
+                .divide(cien, 2, RoundingMode.HALF_UP);
+
+        BigDecimal agregadoCalculado = base.multiply(porcentajeAgregadoBD)
+                .divide(cien, 2, RoundingMode.HALF_UP);
+
+        // Subtotal final
+        subtotal = base.subtract(descuentoCalculado).add(agregadoCalculado);
 
         this.subTotal = subtotal;
-
     }
 
 

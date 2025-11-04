@@ -19,15 +19,22 @@ public class ProductoService extends BaseService<Producto,Long, ProductoReposito
 
 
 
-    public List<Producto> findProducto(String param){
-        try{
+    public List<Producto> findProducto(String param) {
+        try {
+            String[] palabras = param.trim().toLowerCase().split("\\s+");
 
-            return repository.buscarPorCodigoONombre(param);
+            String palabra1 = palabras.length > 0 ? palabras[0] : "";
+            String palabra2 = palabras.length > 1 ? palabras[1] : "";
 
-        }catch (Exception e){
-            throw new RuntimeException("No se pudo realizar la busqueda del objeto con el parámetro "+ e.getMessage());
+            List<Producto> resultados = repository.buscarPorCodigoONombreAvanzado(param, palabra1, palabra2);
+
+            return resultados;
+
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo realizar la búsqueda del producto: " + e.getMessage(), e);
         }
     }
+
 
 
     public List<Producto> buscarPorNombreCategoria(String nombre) {

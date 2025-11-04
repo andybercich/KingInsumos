@@ -15,9 +15,10 @@ public class PedidoDTO {
         private Long id;
         private String cliente;
         private BigDecimal total;
-        private boolean apartado = false;
+        private boolean pagadoTotalmente = false;
         private BigDecimal adelanto = BigDecimal.valueOf(0);
         private LocalDateTime fechaPedido;
+        private String contacto;
         private String medioPago;
         private List<DetallePedidoDTO> detalles;
 
@@ -27,11 +28,10 @@ public class PedidoDTO {
                 dto.setId(pedido.getId());
                 dto.setCliente(pedido.getCliente());
                 dto.setTotal(pedido.getTotal());
+                dto.setContacto(pedido.getContacto());
                 dto.setFechaPedido(pedido.getFechaPedido());
-                if (pedido.isApartado() && pedido.getAdelanto() != null){
-                        dto.setAdelanto(pedido.getAdelanto());
-                        dto.setApartado(true);
-                }
+                dto.setPagadoTotalmente(pedido.isPagadoTotalmente());
+                dto.setAdelanto(pedido.getAdelanto());
                 dto.setMedioPago(pedido.getMedioPago().toString());
                 dto.setDetalles(pedido.getDetalles().stream()
                         .map(DetallePedidoDTO::fromEntity)

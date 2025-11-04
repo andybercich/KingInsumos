@@ -9,13 +9,10 @@ import org.example.Repositories.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.example.Entities.Producto;
-import org.springframework.stereotype.Service;
 
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -58,7 +54,7 @@ public class BalanceExcelService {
             Row cabeceraPedido = hojaPedidos.createRow(fila.getAndIncrement());
             cabeceraPedido.createCell(0).setCellValue("Cliente");
             cabeceraPedido.createCell(1).setCellValue("Fecha");
-            cabeceraPedido.createCell(2).setCellValue("Total");
+            cabeceraPedido.createCell(2).setCellValue("Pagado totalmente");
             cabeceraPedido.createCell(3).setCellValue("Ganancia");
             cabeceraPedido.createCell(4).setCellValue("Medio de Pago");
 
@@ -69,12 +65,10 @@ public class BalanceExcelService {
                 Row row = hojaPedidos.createRow(fila.getAndIncrement());
                 row.createCell(0).setCellValue(p.getCliente());
                 row.createCell(1).setCellValue(p.getFechaPedido().toString());
-                row.createCell(2).setCellValue(p.getTotal().doubleValue());
+                row.createCell(2).setCellValue(p.isPagadoTotalmente());
                 row.createCell(3).setCellValue(p.getGanancia().doubleValue());
                 row.createCell(4).setCellValue(p.getMedioPago().toString());
 
-                totalPedidos = totalPedidos.add(p.getTotal());
-                gananciaPedidos = gananciaPedidos.add(p.getGanancia());
             }
 
             // Envios
@@ -118,30 +112,6 @@ public class BalanceExcelService {
 
                 totalGastos = totalGastos.add(g.getGasto());
             }
-
-            // Resumen
-            Row resumen = hojaResumen.createRow(0);
-            resumen.createCell(0).setCellValue("Resumen financiero");
-
-            hojaResumen.createRow(2).createCell(0).setCellValue("Total pedidos:");
-            hojaResumen.getRow(2).createCell(1).setCellValue(totalPedidos.doubleValue());
-
-            hojaResumen.createRow(3).createCell(0).setCellValue("Ganancia pedidos:");
-            hojaResumen.getRow(3).createCell(1).setCellValue(gananciaPedidos.doubleValue());
-
-            hojaResumen.createRow(4).createCell(0).setCellValue("Total envíos:");
-            hojaResumen.getRow(4).createCell(1).setCellValue(totalEnvios.doubleValue());
-
-            hojaResumen.createRow(5).createCell(0).setCellValue("Ganancia envíos:");
-            hojaResumen.getRow(5).createCell(1).setCellValue(gananciaEnvios.doubleValue());
-
-            hojaResumen.createRow(6).createCell(0).setCellValue("Total gastos:");
-            hojaResumen.getRow(6).createCell(1).setCellValue(totalGastos.doubleValue());
-
-            hojaResumen.createRow(8).createCell(0).setCellValue("Ganancia neta:");
-            hojaResumen.getRow(8).createCell(1).setCellValue(
-                    gananciaPedidos.add(gananciaEnvios).subtract(totalGastos).doubleValue()
-            );
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);

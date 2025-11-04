@@ -14,7 +14,7 @@ public class EnvioDTO {
 
     private Long id;
     private String cliente;
-    private BigDecimal total;
+    private BigDecimal totalSinEnvio;
     private LocalDateTime fechaPedido;
     private String medioPago;
     private List<DetallePedidoDTO> detalles;
@@ -54,7 +54,7 @@ public class EnvioDTO {
         EnvioDTO dto = new EnvioDTO();
         dto.setId(pedido.getId());
         dto.setCliente(pedido.getCliente());
-        dto.setTotal(pedido.getTotalSinEnvio());
+        dto.setTotalSinEnvio(pedido.getTotalSinEnvio());
         dto.setFechaPedido(pedido.getFechaPedido());
         dto.setMedioPago(pedido.getMedioPago().toString());
 

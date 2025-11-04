@@ -2,6 +2,7 @@ package org.example.Entities.DTO;
 
 import lombok.Data;
 import org.example.Entities.Enum.Orden;
+import org.example.Entities.Enum.Unidad;
 import org.example.Entities.Producto;
 
 import java.math.BigDecimal;
@@ -14,8 +15,11 @@ public class ProductoDTOFind {
     private Long id;
     private Long codigo;
     private String nombre;
-    private BigDecimal precio;
+    private BigDecimal precioVenta;
     private String imagen;
+    private boolean borrado;
+    private Unidad unidad;
+    private double medida;
     private int stock;
 
 
@@ -23,10 +27,13 @@ public class ProductoDTOFind {
         ProductoDTOFind dto = new ProductoDTOFind();
         dto.setId(producto.getId());
         dto.setNombre(producto.getNombre());
-        dto.setPrecio(producto.getPrecioVenta());
+        dto.setPrecioVenta(producto.getPrecioVenta());
         dto.setImagen(producto.getImagen());
         dto.setCodigo(producto.getCodigo());
         dto.setStock(producto.getStock());
+        dto.setBorrado(producto.isBorrado());
+        dto.setUnidad(producto.getUnidad());
+        dto.setMedida(producto.getMedida());
         return dto;
     }
 

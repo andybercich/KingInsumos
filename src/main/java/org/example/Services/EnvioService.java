@@ -2,11 +2,8 @@ package org.example.Services;
 
 import org.example.Entities.DTO.EnvioDTO;
 import org.example.Entities.DTO.PaginaEnvioDTO;
-import org.example.Entities.DTO.PaginaPedidoDTO;
-import org.example.Entities.DTO.PedidoDTO;
 import org.example.Entities.DetallePedido;
 import org.example.Entities.Envio;
-import org.example.Entities.Pedido;
 import org.example.Repositories.DetallePedidoRepository;
 import org.example.Repositories.EnvioRepository;
 import org.example.Repositories.ProductoRepository;
@@ -160,7 +157,17 @@ public class EnvioService extends BaseService<Envio, Long, EnvioRepository>{
 
             existingEnvio.setCliente(envioUpdate.getCliente());
             existingEnvio.setMedioPago(envioUpdate.getMedioPago());
-            existingEnvio.setTime();
+            existingEnvio.setNumero(envioUpdate.getNumero());
+            existingEnvio.setCalle(envioUpdate.getCalle());
+            existingEnvio.setProvincia(envioUpdate.getProvincia());
+            existingEnvio.setCodigoPostal(envioUpdate.getCodigoPostal());
+            existingEnvio.setDepartamento(envioUpdate.getDepartamento());
+            existingEnvio.setAdelanto(envioUpdate.getAdelanto());
+            existingEnvio.setContacto(envioUpdate.getContacto());
+            existingEnvio.setLocalidad(envioUpdate.getLocalidad());
+            existingEnvio.setEdificio(envioUpdate.getEdificio());
+            existingEnvio.setPagadoEnEntrega(envioUpdate.isPagadoEnEntrega());
+            existingEnvio.setAdelanto(envioUpdate.getAdelanto());
             existingEnvio.setGanancia(ganancia);
             existingEnvio.calculateTotal();
 
@@ -210,6 +217,11 @@ public class EnvioService extends BaseService<Envio, Long, EnvioRepository>{
         dto.setTotalElementos(envioPage.getTotalElements());
 
         return dto;
+    }
+
+    public List<Envio> buscarPorClienteOContacto(String param) {
+        return repository.buscarPorClienteOContacto(param);
+
     }
 
 

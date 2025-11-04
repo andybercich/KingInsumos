@@ -30,8 +30,9 @@ public class Pedido extends  Base{
     @NotBlank(message = "Ingresa un cliente para el pedido")
     protected String cliente;
 
+    private String contacto;
+
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "Ingresa un medio de pago del pedido")
     protected MedioPago medioPago;
 
     protected BigDecimal total;
@@ -39,11 +40,12 @@ public class Pedido extends  Base{
     @OneToMany(mappedBy = "pedido", orphanRemoval = true)
     protected List<DetallePedido> detalles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "pedido", orphanRemoval = true)
+    protected List<OpcionesPago> opcionesPagos = new ArrayList<>();
+
     private BigDecimal ganancia;
 
-    private boolean apartado = false;
-
-    private BigDecimal adelanto = null;
+    private boolean pagadoTotalmente = false;
 
     protected LocalDateTime fechaPedido;
 
@@ -61,12 +63,18 @@ public class Pedido extends  Base{
             total = detalles.stream()
                     .map(detalle -> detalle.getSubTotal())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-            if (apartado && adelanto != null){
-                this.total = total.subtract(adelanto);
-            }else {
-                this.total = total;
-            }
 
+
+
+            this.total = total;
+
+        }
+    }
+
+    public BigDecimal calcularAgregadoOpcionesPago (){
+        BigDecimal total = BigDecimal.valueOf(0.0);
+        for (OpcionesPago o: this.opcionesPagos){
+            
         }
     }
 

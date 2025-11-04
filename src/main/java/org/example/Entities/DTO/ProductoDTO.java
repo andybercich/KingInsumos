@@ -32,9 +32,15 @@ public class ProductoDTO {
 
     private BigDecimal precioVenta;
 
+    private boolean borrado;
+
     private int stock;
 
+    private int stockMin;
+
     private String imagen;
+
+    private String descripcion;
 
     public static ProductoDTO fromEntity(Producto producto) {
         ProductoDTO dto = new ProductoDTO();
@@ -47,6 +53,8 @@ public class ProductoDTO {
         dto.setUnidad(producto.getUnidad());
         dto.setMedida(producto.getMedida());
         dto.setStock(producto.getStock());
+        dto.setStockMin(producto.getStockMin());
+        dto.setBorrado(producto.isBorrado());
 
         return dto;
     }

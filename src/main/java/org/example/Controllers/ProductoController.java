@@ -47,6 +47,7 @@ public class ProductoController extends BaseController<Producto, Long, ProductoR
 
         try {
 
+
             List<ProductoDTOFind> productoDTOFind =
                     ProductoDTOFind.fromEntitys(service.findProducto(codigoNombreParam));
             return ResponseEntity.ok(productoDTOFind);

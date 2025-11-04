@@ -85,6 +85,11 @@ public class PedidoService extends BaseService<Pedido, Long, org.example.Reposit
 
                 }
             }
+
+            if (!newPedido.isPagadoTotalmente() && newPedido.getOpcionesPagos().isEmpty()){
+                throw new RuntimeException("El pedido no puede no estar totalmente pagado y no tener adelanto ");
+            }
+
             newPedido.setDetalles(detallePedidos);
             newPedido.calculateTotal();
             newPedido.setGanancia(ganancia);
@@ -125,6 +130,7 @@ public class PedidoService extends BaseService<Pedido, Long, org.example.Reposit
             }
 
             for (DetallePedido viejo : detallesDB) {
+
                 if (!nuevosDetallesMap.containsKey(viejo.getId())) {
                     detallePedidoService.deleteById(viejo.getId());
                 }
@@ -155,10 +161,15 @@ public class PedidoService extends BaseService<Pedido, Long, org.example.Reposit
                 }
             }
 
+            if (updatePedido.isPagadoTotalmente() && !existingPedido.isPagadoTotalmente()){
+                existingPedido.setTime();
+                existingPedido.setPagadoTotalmente(updatePedido.isPagadoTotalmente());
+            }
+
             existingPedido.setCliente(updatePedido.getCliente());
             existingPedido.setMedioPago(updatePedido.getMedioPago());
             existingPedido.setGanancia(ganancia);
-            existingPedido.setTime();
+            existingPedido.setContacto(updatePedido.getContacto());
             existingPedido.calculateTotal();
 
             return repository.saveAndFlush(existingPedido);
@@ -166,6 +177,10 @@ public class PedidoService extends BaseService<Pedido, Long, org.example.Reposit
         } catch (Exception e) {
             throw new RuntimeException("Error al actualizar el pedido: " + e.getMessage(), e);
         }
+    }
+
+    public List<Pedido> buscarPorClienteOContacto(String param) {
+        return repository.buscarPorClienteOContacto(param);
     }
 
     public PaginaPedidoDTO findByFechaPedidoBetween(LocalDateTime desde, LocalDateTime hasta, int page, int size) {

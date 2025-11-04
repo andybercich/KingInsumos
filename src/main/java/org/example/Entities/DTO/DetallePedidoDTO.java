@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 
 @Data
 public class DetallePedidoDTO {
+    private Long id;
     private int cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal subTotal;
@@ -19,6 +20,7 @@ public class DetallePedidoDTO {
 
     public static DetallePedidoDTO fromEntity(DetallePedido detalle) {
         DetallePedidoDTO dto = new DetallePedidoDTO();
+        dto.setId(detalle.getId());
         dto.setCantidad(detalle.getCantidad());
         dto.setPrecioUnitario(detalle.getPrecioUnitario());
         dto.setSubTotal(detalle.getSubTotal());

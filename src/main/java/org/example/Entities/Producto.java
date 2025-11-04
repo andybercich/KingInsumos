@@ -49,6 +49,8 @@ public class Producto extends Base {
 
     private int stockMin;
 
+    private boolean borrado;
+
     @Column(length = 300)
     private String descripcion;
 
