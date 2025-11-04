@@ -32,6 +32,8 @@ public class Pedido extends  Base{
 
     private String contacto;
 
+    private BigDecimal adelanto;
+
     @Enumerated(EnumType.STRING)
     protected MedioPago medioPago;
 
@@ -71,12 +73,6 @@ public class Pedido extends  Base{
         }
     }
 
-    public BigDecimal calcularAgregadoOpcionesPago (){
-        BigDecimal total = BigDecimal.valueOf(0.0);
-        for (OpcionesPago o: this.opcionesPagos){
-            
-        }
-    }
 
 
 }
