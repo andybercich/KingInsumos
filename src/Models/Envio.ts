@@ -1,144 +1,129 @@
-import { DetallePedido, DetallePedidoDTO, MedioPago } from "./Pedido";
+import { DetallePedido, DetallePedidoDTO, OpcionPago } from "./Pedido";
 
-export interface Envio{
+export interface Envio {
 
-    id:number;
+    id: number;
     
-    cliente:string;
+    cliente: string;
 
-    medioPago:MedioPago;
+    totalSinEnvio: number;
 
-    totalSinEnvio:number;
+    detalles: DetallePedido[];
 
-    detalles:DetallePedido[];
+    fechaPedido: string;
 
-    fechaPedido:string;
+    contacto: string;
 
-    contacto:string;
+    provincia: string;
 
-    provincia:string;
+    localidad: string;
 
-    localidad:string;
+    codigoPostal: string;
 
-    codigoPostal:string;
+    calle: string;
 
-    apartado:boolean;
+    numero: string;
 
-    adelanto:number;
+    edificio: string;
 
-    calle:string;
+    departamento: string;
 
-    numero:number;
-
-    edificio:string;
-
-    departamento:string;
-
-    pagadoEnEntrega: boolean;
-
-    horaFechaEnvio:string;
+    horaFechaEnvio: string;
 
     ganancia: number;
 
-    descripcionesEspecificas:string;
+    descripcionesEspecificas: string;
 
     precioEnvio: number;
+
+    opcionesPagos: OpcionPago[];
+
 }
 
+export interface EnvioCreate {
 
-export interface EnvioCreate{
+    cliente: string;
 
-    cliente:string;
+    detalles: DetallePedido[];
 
-    medioPago:MedioPago;
+    contacto: string;
 
-    totalSinEnvio:number;
+    provincia: string;
 
-    detalles:DetallePedido[];
+    localidad: string;
 
-    fechaPedido:string;
+    codigoPostal: string;
 
-    contacto:string;
+    apartado: boolean;
 
-    provincia:string;
+    calle: string;
 
-    localidad:string;
+    numero: string;
 
-    codigoPostal:string;
+    edificio: string;
 
-    apartado:boolean;
+    departamento: string;
 
-    adelanto:number;
+    horaFechaEnvio: string;
 
-    calle:string;
+    descripcionesEspecificas: string;
 
-    numero:number;
+    precioEnvio: number;
 
-    edificio:string;
+    opcionesPagos: OpcionPago[];
 
-    departamento:string;
+}
 
-    pagadoEnEntrega: boolean;
+export interface EnvioDTO {
 
-    horaFechaEnvio:string;
+    id: number;
+    
+    cliente: string;
+
+    totalSinEnvio: number;
+
+    detalles: DetallePedidoDTO[];
+
+    fechaPedido: string;
+
+    contacto: string;
+
+    provincia: string;
+
+    localidad: string;
+
+    codigoPostal: string;
+
+    apartado: boolean;
+
+    calle: string;
+
+    numero: string;
+
+    edificio: string;
+
+    departamento: string;
+
+    horaFechaEnvio: string;
 
     ganancia: number;
 
-    descripcionesEspecificas:string;
-
-    precioEnvio: number;
-}
-
-export interface EnvioDTO{
-
-    
-    id:number;
-    
-    cliente:string;
-
-    medioPago:MedioPago;
-
-    totalSinEnvio:number;
-
-    detalles:DetallePedidoDTO[];
-
-    fechaPedido:string;
-
-    contacto:string;
-
-    provincia:string;
-
-    localidad:string;
-
-    codigoPostal:string;
-
-    apartado:boolean;
-
-    adelanto:number;
-
-    calle:string;
-
-    numero:number;
-
-    edificio:string;
-
-    departamento:string;
-
-    pagadoEnEntrega: boolean;
-
-    horaFechaEnvio:string;
-
-    ganancia: number;
-
-    descripcionesEspecificas:string;
+    descripcionesEspecificas: string;
 
     precioEnvio: number;
 
+    opcionesPagos: OpcionPago[];
+
 }
 
-export interface PaginaEnvioDTO{
+export interface PaginaEnvioDTO {
+
     envios: EnvioDTO[];
+
     paginaActual: number;
+
     totalPaginas: number;
+
     totalElementos: number;
+
 }

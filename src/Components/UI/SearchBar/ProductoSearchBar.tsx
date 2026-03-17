@@ -49,8 +49,6 @@ const ProductoSearchBar = ({ isDetalle}: Props) => {
 
   const handleSelect = (producto: ProductoDTOFind) => {
 
-    setQuery(producto.nombre);
-    setShowDropdown(false);
     if(isDetalle){
       const yaExiste = detallesPedido.some(p => p.producto.id === producto.id);
 
@@ -65,7 +63,7 @@ const ProductoSearchBar = ({ isDetalle}: Props) => {
       }
 
       const newDetalle: DetallePedidoListPedido = {
-        cantidad: 0,
+        cantidad: 1,
         subTotal: 0,
         porcentajeAgregado: 0,
         porcentajeDescontado: 0,
@@ -74,26 +72,30 @@ const ProductoSearchBar = ({ isDetalle}: Props) => {
       };
 
       addDetalle(newDetalle);
-
-
+      setShowDropdown(false);
+      setQuery('');
     }else{
       setId(producto.id)
       setEdit(true);
     }
-    setQuery('');
+
   };
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
-      <input
-        className={style.mainDiv}
-        type="text"
-        onBlur={() => setTimeout(() => setShowDropdown(false), 100)}
-        onFocus={() => query && setShowDropdown(true)}
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Buscar producto por nombre o código"
-      />
+<input
+  className={style.mainDiv}
+  type="text"
+  onBlur={() => {
+    if (isDetalle) {
+      setTimeout(() => setShowDropdown(false), 100);
+    }
+  }}
+  onFocus={() => query && setShowDropdown(true)}
+  value={query}
+  onChange={(e) => setQuery(e.target.value)}
+  placeholder="Buscar producto por nombre o código"
+/>
 
       {showDropdown && productos.length > 0 && (
         <ul

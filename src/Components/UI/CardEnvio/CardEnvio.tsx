@@ -55,11 +55,10 @@ export const CardEnvio = ({envio}:EnvioProps) => {
       <div className= {style.card}>
           <div className={style.titulos}>
               <h3>{envio.cliente}</h3>
-              <h3>{envio.totalSinEnvio}</h3>
+              <h3>${envio.totalSinEnvio}</h3>
               <h3>{envio.fechaPedido}</h3>
               <h3>{envio.contacto}</h3>
-              <h3>{envio.medioPago}</h3>
-              <h3>{envio.adelanto > 0 ? `Total:$${envio.totalSinEnvio}-$${envio.adelanto}=$${envio.totalSinEnvio-envio.adelanto} `: `${envio.totalSinEnvio}`}</h3>
+
           </div>
           
           <div className={style.iconos}>

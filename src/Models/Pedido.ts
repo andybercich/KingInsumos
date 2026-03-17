@@ -1,41 +1,57 @@
 import { Producto, ProductoDTO, ProductoDTOFind } from "./ProductoDTO";
 
+export interface OpcionPago {
+
+    id?: number;
+
+    medioPago: MedioPago;
+
+    monto: number;
+
+    fechaPago: string;
+    info?: string;
+
+    agregadoTotal: number;
+
+    agregadoMedio: number;
+
+}
 
 export interface PedidoDTO{
 
-
     id: number;
-    cliente:string;
-    total:number;
-    pagadoTotalmente: boolean;
+
+    cliente: string;
+
+    total: number;
+
+    fechaPedido: string;
+
     contacto: string;
-    adelanto:number;
-    fechaPedido: number;
-    medioPago: MedioPago;
+
     detalles: DetallePedidoDTO[];
+
+    opcionesPagos: OpcionPago[];
 
 }
 
 export interface PedidoUpdate{
-        id: number;
 
-   cliente:string;
+    id: number;
 
-   contacto: string;
+    cliente: string;
 
-    medioPago: MedioPago;
+    contacto: string;
 
-    total:number;
+    total: number;
 
-    detalles:DetallePedidoListPedido[];
+    detalles: DetallePedidoListPedido[];
 
-    ganancia:number;
-
-    pagadoTotalmente: boolean;
-
-    adelanto: number;
+    ganancia: number;
 
     fechaPedido: string;
+
+    opcionesPagos: OpcionPago[];
 
 }
 
@@ -43,59 +59,45 @@ export interface Pedido{
 
     id: number;
 
-   cliente:string;
+    cliente: string;
 
-   contacto: string;
+    contacto: string;
 
-    medioPago: MedioPago;
+    total: number;
 
-    total:number;
+    detalles: DetallePedido[];
 
-    detalles:DetallePedido[];
-
-    ganancia:number;
-
-    pagadoTotalmente: boolean;
-
-    adelanto: number;
+    ganancia: number;
 
     fechaPedido: string;
-}
 
+    opcionesPagos: OpcionPago[];
+
+}
 
 export interface PedidoCreate{
 
-   cliente:string;
+    cliente: string;
 
-   contacto: string;
+    contacto: string;
 
-    medioPago: MedioPago;
+    detalles: DetallePedidoListPedido[];
 
-    total:number;
+    opcionesPagos: OpcionPago[];
 
-    detalles:DetallePedidoListPedido[];
-
-    ganancia:number;
-
-    pagadoTotalmente: boolean;
-
-    adelanto: number;
-
-    fechaPedido: string;
 }
-
 
 export interface DetallePedido{
 
-    id?:number;
+    id?: number;
 
     cantidad: number;
 
     subTotal: number;
 
-    porcentajeAgregado:number;
+    porcentajeAgregado: number;
 
-    porcentajeDescontado : number;
+    porcentajeDescontado: number;
 
     producto: Producto;
 
@@ -105,59 +107,77 @@ export interface DetallePedido{
         id: number
     };
 
-    envio: {
+    envio:{
         id:number
     };
 
 }
 
 export interface DetallePedidoListPedido{
-    id?:number
+
+    id?: number;
 
     cantidad: number;
 
     subTotal: number;
 
-    porcentajeAgregado:number;
+    porcentajeAgregado: number;
 
-    porcentajeDescontado : number;
+    porcentajeDescontado: number;
 
-    producto: ProductoDTOFind,
+    producto: ProductoDTOFind;
 
     precioUnitario: number;
-    
+
 }
 
 export interface DetallePedidoDTO{
-    id:number
-    cantidad:number;
-    precioUnitario:number;
-    subTotal:number;
-    porcentajeAgregado:number;
-    porcentajeDescontado:number;
-    producto:ProductoDTO;
+
+    id: number;
+
+    cantidad: number;
+
+    precioUnitario: number;
+
+    subTotal: number;
+
+    porcentajeAgregado: number;
+
+    porcentajeDescontado: number;
+
+    producto: ProductoDTO;
+
 }
-
-
 
 export enum MedioPago {
 
-    DEBITO, TRANSFERENCIA, CREDITO, QR, EFECTIVO
+    DebitoPostnetMp,
+    CreditoPostnetMp,
+    QR,
+    LinkMercadoPago,
+    Efectivo,
+    Transferencia,
+    GoCuotas,
+    None
 
 }
 
-export const StringToMedioPago = (medioString: string): MedioPago => {
+export const StringToMedioPago = (medioString: string): string => {
     switch (medioString.toUpperCase()) {
-        case 'DEBITO':
-            return MedioPago.DEBITO;
-        case 'TRANSFERENCIA':
-            return MedioPago.TRANSFERENCIA;
-        case 'CREDITO':
-            return MedioPago.CREDITO;
+        case 'DEBITOPOSTNETMP':
+            return "DebitoPostnetMp";
+        case 'CREDITOPOSTNETMP':
+            return "CreditoPostnetMp";
         case 'QR':
-            return MedioPago.QR;
+            return "QR";
+        case 'LINKMERCADOPAGO':
+            return "LinkMercadoPago";
         case 'EFECTIVO':
-            return MedioPago.EFECTIVO
+            return "Efectivo";
+        case 'TRANSFERENCIA':
+            return "Transferencia";
+        case 'GOCUOTAS':
+            return "GoCuotas";
         default:
             throw new Error(`Medio de pago no válido: ${medioString}`);
     }
@@ -165,10 +185,12 @@ export const StringToMedioPago = (medioString: string): MedioPago => {
 
 export interface PaginaPedidoDTO{
 
-    pedidos:PedidoDTO[];
-    paginaActual:number;
-    totalPaginas:number;
-    totalElementos:number;
+    pedidos: PedidoDTO[];
 
+    paginaActual: number;
+
+    totalPaginas: number;
+
+    totalElementos: number;
 
 }

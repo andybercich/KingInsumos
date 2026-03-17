@@ -19,6 +19,7 @@ export const ProductoCard = ({product}:IProps) => {
   const {setRecargar,recargar} = paginadorStore();
   const [edit,setEdit] = useState<boolean>(false);
   const [ver, setVer] = useState<boolean>(false);
+
   const onDelete= async()=>{
     const service = new ProductoService();
     try {
@@ -68,11 +69,9 @@ export const ProductoCard = ({product}:IProps) => {
         ReactDOM.createPortal(
         <CreateProductoModal close={setEdit} idProduct={product.id}/> , 
               document.body
-        ) 
-      
+        )
         : null}
         {ver  ? 
-        
         ReactDOM.createPortal(
         <VerProducto close={setVer} idProducto={product.id}/> , 
               document.body

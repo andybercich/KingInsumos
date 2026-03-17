@@ -97,7 +97,7 @@ export interface Producto{
     
     id : number;
 
-    codigo:number;
+    codigo:string;
 
     nombre:string;
 
@@ -142,7 +142,7 @@ export interface PaginaProductoDTO{
 }
 
 export interface ProductoCreate{
-    codigo:number;
+    codigo:string;
 
     nombre:string;
 

@@ -59,9 +59,8 @@ interface IProps{
               <h3>{pedido.cliente}</h3>
               <h3>${pedido.total}</h3>
               <h3>{pedido.fechaPedido}</h3>
-              <h3>{pedido.contacto}</h3>
-              <h3>{pedido.medioPago}</h3>
-              <h3>{pedido.pagadoTotalmente ? "Pagado": "Señado"} </h3>
+              <h3>{pedido.contacto}</h3><h3>
+</h3>
           </div>
   
           

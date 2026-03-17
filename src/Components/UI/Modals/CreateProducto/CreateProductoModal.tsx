@@ -134,7 +134,7 @@ export const CreateProductoModal = ({ close,idProduct}: Props) => {
             const editProducto:Producto = {
                 id: producto.id,
                 nombre: values.nombre,
-                codigo: Number(values.codigo),
+                codigo: values.codigo,
                 categoria: {id:Number(values.categoriaId)},
                 unidad: stringToUnidad(values.unidad),
                 medida: Number(values.medida),
@@ -152,7 +152,7 @@ export const CreateProductoModal = ({ close,idProduct}: Props) => {
             console.log(String(Unidad.KG));
             const preoductoCreate:ProductoCreate = {
               nombre: values.nombre,
-              codigo: Number(values.codigo),
+              codigo: values.codigo,
               categoria: {id:Number(values.categoriaId)},
               unidad: stringToUnidad(values.unidad),
               medida: Number(values.medida),
@@ -215,7 +215,7 @@ export const CreateProductoModal = ({ close,idProduct}: Props) => {
         <input
           id="codigo"
           name="codigo"
-          type="number"
+          type="text"
           placeholder="Código"
           required
           value={values.codigo}

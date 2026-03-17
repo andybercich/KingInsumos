@@ -102,8 +102,7 @@ const SearchCliente = ({envio}:IProps) => {
                         borderBottom: '2px solid #eee',
                       }}
                     >
-                      <strong>Cliente: </strong>{prod.cliente}- <strong>Fecha: </strong>{prod.fechaPedido} -<strong>Contacto: </strong>{prod.contacto} - <strong>Total: </strong>{prod.total} - <strong>Medio pago:</strong> {prod.medioPago}  - <strong>Adelanto:</strong>  {prod.adelanto} {prod.adelanto > 0  ? `- Total menos adelanto: ${prod.total-prod.adelanto}` : null}
-        
+                      <strong>Cliente: </strong>{prod.cliente}- <strong>Fecha: </strong>{prod.fechaPedido} -<strong>Contacto: </strong>{prod.contacto} - <strong>Total: </strong>{prod.total}
                       {prod.detalles.length > 0 ? prod.detalles.map((ped) => (
         
                         <>
@@ -139,7 +138,7 @@ const SearchCliente = ({envio}:IProps) => {
                         borderBottom: '2px solid #eee',
                       }}
                     >
-                      <strong>Cliente: </strong>{prod.cliente} - <strong>Fecha: </strong>{prod.fechaPedido} -<strong>Contacto: </strong>{prod.contacto} -<strong>Total sin envio: </strong>{prod.totalSinEnvio} - <strong>Medio pago:</strong> {prod.medioPago}  - <strong>Adelanto:</strong>  {prod.adelanto} {prod.adelanto > 0  ? `- Total menos adelanto: ${prod.totalSinEnvio-prod.adelanto}` : null}
+                      <strong>Cliente: </strong>{prod.cliente} - <strong>Fecha: </strong>{prod.fechaPedido} -<strong>Contacto: </strong>{prod.contacto} -<strong>Total sin envio: </strong>{prod.totalSinEnvio} - <strong>Medio pago:</strong>
         
                       {prod.detalles.length > 0 ? prod.detalles.map((ped) => (
         

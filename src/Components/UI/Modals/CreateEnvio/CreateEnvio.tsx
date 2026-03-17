@@ -1,15 +1,19 @@
 import { Dispatch, useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
 import styles from "./CreateEnvio.module.css";
+
 import { paginadorStore } from "../../../../store/PaginaStore";
-import { Envio, EnvioCreate, EnvioDTO } from "../../../../Models/Envio";
-import { DetallePedido,  StringToMedioPago } from "../../../../Models/Pedido";
+import { EnvioCreate, EnvioDTO, Envio } from "../../../../Models/Envio";
+import { MedioPago, OpcionPago, StringToMedioPago } from "../../../../Models/Pedido";
+
 import { EnvioService } from "../../../../Services/EnvioService";
 import { badContest, godContest } from "../../PopUps/Alerts/ServerBadAlert";
+
 import { useForm } from "../../../../Hooks/useForm";
 import { Close } from "../../../Icons/CloseIcon/Close";
 import ProductoSearchBar from "../../SearchBar/ProductoSearchBar";
 import { CardDetalle } from "../../CardDetallePedido/CardDetalle";
-import { Button, FormCheck } from "react-bootstrap";
+
 import { getLocalDateTimeString } from "../../../../Models/FuncionDate";
 import { usePedidoStore } from "../../../../store/DetalleStore";
 
@@ -18,388 +22,451 @@ interface Props {
   close: Dispatch<React.SetStateAction<boolean>>;
   edit: boolean;
 }
-const mediosPago = [
-      { value: "DEBITO", label: "Debito" },
-      { value: "TRANSFERENCIA", label: "TRANSFERENCIA" },
-      { value: "CREDITO", label: "CREDITO" },
-      { value: "QR", label: "QR" },
-      { value: "EFECTIVO", label: "EFECTIVO" },
-];
-interface MediosPago {
-  value: string;
-  label: string;
-}
 
-export const CreateEnvio = ({ close, idEnvio, edit }: Props) => {
+const mediosPago = [
+  { value: "DebitoPostnetMp", label: "Débito Postnet MP" },
+  { value: "CreditoPostnetMp", label: "Crédito Postnet MP" },
+  { value: "QR", label: "QR" },
+  { value: "LinkMercadoPago", label: "Link Mercado Pago" },
+  { value: "Efectivo", label: "Efectivo" },
+  { value: "Transferencia", label: "Transferencia" },
+  { value: "GoCuotas", label: "Go Cuotas" }
+];
+
+export const CreateEnvio = ({ close, idEnvio }: Props) => {
+
   const { setRecargar, recargar } = paginadorStore();
   const [envio, setEnvio] = useState<EnvioDTO>();
-  const { detallesPedido,calcularTotal, setDetallesPedido, total } = usePedidoStore();
-  const [envioPagadoEntrega, setEnvioPagado] = useState<boolean>(false);
+
+  const { detallesPedido, calcularTotal, setDetallesPedido, total } = usePedidoStore();
+
+  const [pagos, setPagos] = useState<OpcionPago[]>([]);
 
   const fetchEnvio = async () => {
     try {
+
       const service = new EnvioService();
+
       if (idEnvio) {
+
         const response = await service.getEnvioDTOById(idEnvio);
+
         setEnvio(response.data);
+
         setDetallesPedido(response.data.detalles);
+
+        if (response.data.opcionesPagos) {
+          setPagos(response.data.opcionesPagos);
+        }
+
       }
-    } catch (error) {
-      badContest("Error al obtener envio con id");
+
+    } catch {
+      badContest("Error al obtener envio");
     }
   };
 
+  useEffect(() => {
+    calcularTotal();
+  }, [detallesPedido]);
 
-useEffect(() => {
-  console.log(detallesPedido);
-  calcularTotal();
-}, [detallesPedido]);
+  useEffect(() => {
+    fetchEnvio();
+  }, []);
 
   useEffect(() => {
 
-    fetchEnvio();
-    console.log(mediosPago);
-    
-    console.log(mediosPagos);
-}, []);
+    if (envio) {
 
+      resetForm({
+        cliente: envio.cliente,
+        contacto: envio.contacto,
+        provincia: envio.provincia,
+        localidad: envio.localidad,
+        codigoPostal: envio.codigoPostal,
+        calle: envio.calle,
+        numero: envio.numero,
+        edificio: envio.edificio,
+        departamento: envio.departamento,
+        precioEnvio: Number(envio.precioEnvio),
+        descripcionesEspecificas: envio.descripcionesEspecificas
+      });
 
+    }
 
-useEffect(() => {
-  filtrarMedios();
-  if (envio) {
-    resetForm({
-      precioEnvio: envio.precioEnvio,
-      descripcionesEspecificas: envio.descripcionesEspecificas,
-      calle: envio.calle,
-      numero: envio.numero,
-      edificio: envio.edificio,
-      departamento: envio.departamento,
-      provincia: envio.provincia,
-      codigoPostal: envio.codigoPostal,
-      localidad: envio.localidad,
-      cliente: envio.cliente,
-      contacto: envio.contacto,
-      adelanto: envio.adelanto,
-      MedioPago: envio.medioPago.toString(),
-      total: envio.totalSinEnvio
-    });
-    setEnvioPagado(envio.pagadoEnEntrega);
-  }
-}, [envio]);
-
-  const [mediosPagos, setMediosPagos] = useState<MediosPago[]>(mediosPago);
-
+  }, [envio]);
 
   const { values, handleChange, resetForm } = useForm({
-    precioEnvio: 0,
-    descripcionesEspecificas: "",
-    departamento: "",
-    calle: "",
-    numero: 0,
-    edificio: "",
+
+    cliente: "",
+    contacto: "",
     provincia: "",
     localidad: "",
     codigoPostal: "",
-    cliente: "",
-    contacto: "",
-    adelanto: 0,
-    MedioPago: "",
-    total:0,
+    calle: "",
+    numero: "",
+    edificio: "",
+    departamento: "",
+    precioEnvio: 0,
+    descripcionesEspecificas: ""
+
   });
 
-      const filtrarMedios = async ()=>{
-  
-        try {
+  const addPago = () => {
 
-          if(envio){
+    setPagos(prev => [
 
-            const mediosPagos = mediosPago.filter(
-  
-              (unidad) => unidad.value !== envio.medioPago.toString()
-            )
-            setMediosPagos(mediosPagos);
-            console.log(mediosPagos)
-          }
-  
-        } catch (error) {
-          console.log(error)
-          badContest("No se pudo cargar nigun medio de pago")
-  
-        }
-  
+      ...prev,
+
+      {
+        medioPago: MedioPago.None,
+        monto: 0,
+        fechaPago: getLocalDateTimeString(),
+        info: "",
+        agregadoMedio: 0,
+        agregadoTotal: 0
       }
 
+    ]);
+
+  };
+
+  const removePago = (index: number) => {
+
+    setPagos(prev => prev.filter((_, i) => i !== index));
+
+  };
+
+  const updatePago = (index: number, field: string, value: any) => {
+
+    setPagos(prev => {
+
+      const copia = [...prev];
+
+      copia[index] = { ...copia[index], [field]: value };
+
+      return copia;
+
+    });
+
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
+
     event.preventDefault();
+
     const service = new EnvioService();
+
     if (detallesPedido.length === 0) {
-      badContest("No puedes crear un envio sin detalles");
+
+      badContest("No puedes crear un envio sin productos");
+
       return;
+
     }
+
     try {
+
+      const opcionesPagos = pagos.map(p => ({
+
+        medioPago: StringToMedioPago(p.medioPago as any),
+
+        pago: Number(p.monto),
+
+        fechaPago: p.fechaPago,
+
+        info: p.info,
+
+        agregadoMedio: p.agregadoMedio,
+
+        agregadoTotal: p.agregadoTotal
+
+      }));
+
       let response;
+
       if (envio) {
+
         const envioUpdate: Envio = {
+
           id: envio.id,
-          cliente: values.cliente.toString(),
-          medioPago: StringToMedioPago(values.MedioPago),
-          detalles: detallesPedido as DetallePedido[],
-          ganancia: 0,
-          apartado: Number(values.adelanto) > 0 ? true : false,
-          adelanto: Number(values.adelanto),
+
+          cliente: values.cliente,
+
+          contacto: values.contacto,
+
+          detalles: detallesPedido,
+
+          opcionesPagos: opcionesPagos,
+
+          provincia: values.provincia,
+
+          localidad: values.localidad,
+
+          codigoPostal: values.codigoPostal,
+
+          calle: values.calle,
+
+          numero: values.numero,
+
+          edificio: values.edificio,
+
+          departamento: values.departamento,
+
+          precioEnvio: Number(values.precioEnvio),
+
+          descripcionesEspecificas: values.descripcionesEspecificas,
+
+          totalSinEnvio: 0,
+
           fechaPedido: envio.fechaPedido,
-          contacto: values.contacto.toString(),
-          precioEnvio: Number(values.precioEnvio),
-          provincia: values.provincia,
-          localidad: values.localidad,
-          codigoPostal: values.codigoPostal,
-          edificio: values.edificio,
-          numero: Number(values.numero),
-          calle: values.calle,
-          departamento: values.departamento,
-          descripcionesEspecificas: values.descripcionesEspecificas,
-          pagadoEnEntrega: envioPagadoEntrega,
-          totalSinEnvio: 0,
-          horaFechaEnvio: ""
-        };
-        console.log(envioUpdate);
-        response = await service.editarEnvio(envioUpdate, envioUpdate.id);
-      } else {
-        const envioNuevo: EnvioCreate = {
-          cliente: values.cliente.toString(),
-          medioPago: StringToMedioPago(values.MedioPago),
-          detalles: detallesPedido as DetallePedido[],
+
           ganancia: 0,
-          apartado: Number(values.adelanto) > 0 ? true : false,
-          adelanto: Number(values.adelanto),
-          contacto: values.contacto.toString(),
-          precioEnvio: Number(values.precioEnvio),
-          provincia: values.provincia,
-          localidad: values.localidad,
-          fechaPedido: getLocalDateTimeString(),
-          codigoPostal: values.codigoPostal,
-          edificio: values.edificio,
-          numero: Number(values.numero),
-          calle: values.calle,
-          departamento: values.departamento,
-          descripcionesEspecificas: values.descripcionesEspecificas,
-          pagadoEnEntrega: envioPagadoEntrega,
-          totalSinEnvio: 0,
+
           horaFechaEnvio: ""
+
         };
-        console.log(envioNuevo);
-        
+
+        response = await service.editarEnvio(envioUpdate, envio.id);
+
+      }
+
+      else {
+
+        const envioNuevo: EnvioCreate = {
+
+          cliente: values.cliente,
+
+          contacto: values.contacto,
+
+          detalles: detallesPedido,
+
+          opcionesPagos: opcionesPagos,
+
+          provincia: values.provincia,
+
+          localidad: values.localidad,
+
+          codigoPostal: values.codigoPostal,
+
+          calle: values.calle,
+
+          numero: values.numero,
+
+          edificio: values.edificio,
+
+          departamento: values.departamento,
+
+          precioEnvio: Number(values.precioEnvio),
+
+          descripcionesEspecificas: values.descripcionesEspecificas
+
+        };
 
         response = await service.crearEnvio(envioNuevo);
+
       }
 
       if (response.status === 200) {
-        godContest(
-          `Se ha ${envio ? "editado" : "creado"} el envio correctamente`
-        );
+
+        godContest(`Se ha ${envio ? "editado" : "creado"} el envio correctamente`);
+
         resetForm();
+
+        setDetallesPedido([]);
+
+        setPagos([]);
+
         setRecargar(!recargar);
+
         close(false);
-        setDetallesPedido([])
-      } else if (response.status === 400) {
-        badContest("El envio no se pudo crear correctamente");
-        setDetallesPedido([])
-        close(false);
-      } else {
-        badContest("El envio no se pudo crear correctamente");
-        setDetallesPedido([])
-        close(false);
+
       }
-    } catch (error) {
-      badContest("El envio no se pudo crear correctamente: " + error);
-      setDetallesPedido([])
-      close(false);
+
+      else {
+
+        badContest("El envio no se pudo crear correctamente");
+
+      }
+
     }
+
+    catch (error) {
+
+      badContest("Error al crear envio: " + error);
+
+    }
+
   };
 
+  const extraMedioTotal = pagos.reduce((acc,p)=>{
+    const monto = Number(p.monto || 0);
+    return acc + (monto * (p.agregadoMedio || 0)) / 100;
+  },0);
+
+  const extraTotalPedido = pagos.reduce((acc,p)=>{
+    const monto = Number(p.monto || 0);
+    return acc + (monto * (p.agregadoTotal || 0)) / 100;
+  },0);
+
+  const totalPedidoFinal = total + Number(values.precioEnvio || 0) + extraMedioTotal + extraTotalPedido;
+
+  const totalPagos = pagos.reduce((acc,p)=>{
+    const monto = Number(p.monto || 0);
+    const extraMedio = (monto * (p.agregadoMedio || 0)) / 100;
+    return acc + monto + extraMedio;
+  },0);
+
+  const restante = totalPedidoFinal - totalPagos;
+
   return (
+
     <div className={styles.mainDiv}>
+
       <div className={styles.modalUser}>
+
         <h1 className={styles.titulo}>{envio ? "Editar" : "Crear"} Envio</h1>
 
-        <div onClick={()=>{ setDetallesPedido([])}} className={styles.divClose}>
+        <div onClick={() => setDetallesPedido([])} className={styles.divClose}>
           <Close close={close} />
         </div>
 
         <form onSubmit={handleSubmit} className={styles.formularios}>
+
           <div className={styles.inputsMains}>
-            <input
-              id="cliente"
-              name="cliente"
-              type="string"
-              placeholder="Nombre Cliente"
-              value={values.cliente}
-              onChange={handleChange}
-            />
+
+            <input name="cliente" placeholder="Nombre Cliente" value={values.cliente} onChange={handleChange} required />
+            <input name="contacto" placeholder="Contacto" value={values.contacto} onChange={handleChange} />
+            <input name="provincia" placeholder="Provincia" value={values.provincia} onChange={handleChange} />
+            <input name="localidad" placeholder="Localidad" value={values.localidad} onChange={handleChange} />
+            <input name="codigoPostal" placeholder="Código Postal" value={values.codigoPostal} onChange={handleChange} />
+            <input name="calle" placeholder="Calle" value={values.calle} onChange={handleChange} />
+            <input name="numero" placeholder="Número" value={values.numero} onChange={handleChange} />
+            <input name="edificio" placeholder="Edificio" value={values.edificio} onChange={handleChange} />
+            <input name="departamento" placeholder="Departamento" value={values.departamento} onChange={handleChange} />
 
             <input
-              id="contacto"
-              name="contacto"
-              placeholder="Ingrese el contacto del cliente"
-              type="number"
-              value={ Number(values.contacto) <= 0 ? "" : values.contacto}
-              onChange={handleChange}
-            />
-
-            <input
-              id="adelanto"
-              name="adelanto"
-              type="number"
-              placeholder="Adelanto"
-              value={Number(values.adelanto) <= 0 ? "" : values.adelanto}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className={styles.secondInputs}>
-            <input
-              id="provincia"
-              name="provincia"
-              type="text"
-              placeholder="Provincia"
-              value={values.provincia}
-              onChange={handleChange}
-            />
-
-            <input
-              id="localidad"
-              name="localidad"
-              placeholder="Localidad"
-              type="text"
-              value={values.localidad}
-              onChange={handleChange}
-            />
-
-            <input
-              id="codigoPostal"
-              name="codigoPostal"
-              type="number"
-              placeholder="Codigo postal"
-              value={Number(values.codigoPostal) <= 0 ? "" : values.codigoPostal}
-              onChange={handleChange}
-            />
-
-            <input
-              id="calle"
-              name="calle"
-              type="text"
-              placeholder="Calle"
-              value={values.calle}
-              onChange={handleChange}
-            />
-
-            <input
-              id="numero"
-              name="numero"
-              type="number"
-              placeholder="Numero"
-              value={Number(values.numero) <= 0 ? "" : values.numero}
-              onChange={handleChange}
-            />
-
-            <input
-              id="edificio"
-              name="edificio"
-              type="text"
-              placeholder="Edificio"
-              value={values.edificio}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.thirdInputs}>
-            <input
-              id="departamento"
-              name="departamento"
-              type="text"
-              placeholder="Departamento"
-              value={values.departamento}
-              onChange={handleChange}
-            />
-
-            <div className={styles.checkDiv}>
-                <FormCheck label="Envio pagado en entrega" checked={envioPagadoEntrega}  onChange={()=>{setEnvioPagado(!envioPagadoEntrega)}}></FormCheck>
-            </div>
-
-            <input
-              id="precioEnvio"
               name="precioEnvio"
-              type="text"
-              placeholder="Precio de envio"
-              value={values.precioEnvio}
+              type="number"
+              placeholder="Precio envío"
+              value={values.precioEnvio == 0 ? "" : values.precioEnvio}
               onChange={handleChange}
               required
             />
-          </div>
-          <select
-              id="MedioPago"
-              name="MedioPago"
-              value={values.MedioPago}
-              onChange={handleChange}
-              required
-              className={styles.select}
-              >
-              {envio ? <option key={envio.medioPago} value={envio.medioPago}>{envio.medioPago}</option>:<option value="" disabled>Medio Pago</option> }
-              { envio ? mediosPagos.map((type) => (
-                  <option key={type.value} value={type.value}>
-                  {type.label}
-                  </option>
-              )) : mediosPago.map((type) => (
-                <option key={type.value} value={type.value}>
-                {type.label}
-                </option>
-            ))  }
-              </select>
 
+          </div>
+
+          <input
+            name="descripcionesEspecificas"
+            placeholder="Descripción del envío"
+            value={values.descripcionesEspecificas}
+            onChange={handleChange}
+          />
+
+          
           <div className={styles.productoContainer}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyItems: "center",
-                width: "60%",
-              }}
-            >
-              {envio && edit ? (
-                <ProductoSearchBar
-                  isDetalle={true}
-                ></ProductoSearchBar>
-              ) : (
-                <ProductoSearchBar
-                isDetalle={true}
-                ></ProductoSearchBar>
-              )}
+            <h3>Productos</h3>
+
+            <div style={{display:"flex", flexDirection:"column", alignItems:"center",width:"60%"}}>
+              <ProductoSearchBar isDetalle={true}/>
             </div>
+
             <div className={styles.detallePedidoContainer}>
-            {envio ? (
-              detallesPedido.length > 0 ? (
+
+              {detallesPedido.length > 0 ? (
                 detallesPedido.map((d) => (
-                  <CardDetalle pedido={envio} key={d.producto.id} detalle={d} />
+                  <CardDetalle key={d.producto.id} detalle={d} {...(envio ? { envio } : null)} />
                 ))
               ) : (
                 <p>No se ha seleccionado ningún producto</p>
-              )
-            ) : (
-              detallesPedido.length > 0 ? (
-                detallesPedido.map((d) => (
-                  <CardDetalle key={d.producto.id} detalle={d} />
-                ))
-              ) : (
-                <p>No se ha seleccionado ningún producto</p>
-              )
-            )}
+              )}
+
             </div>
+
           </div>
 
-          <h5 style={{ textAlign: "right", width: "80%" }}>
-            Total sin envio:${total}-${values.adelanto}={" "}
-            {total - Number(values.adelanto)}
+          <h3>Pagos</h3>
+
+          <div className={styles.pagosContainer}>
+
+            {pagos.map((pago, index) => {
+
+              const monto = Number(pago.monto || 0);
+              const extraMedio = (monto * (pago.agregadoMedio || 0)) / 100;
+              const aCobrar = monto + extraMedio;
+
+              return (
+
+                <div key={index} className={styles.pagoCard}>
+
+                  <select
+                    value={pago.medioPago == MedioPago.None ? "" : pago.medioPago}
+                    onChange={(e) => updatePago(index, "medioPago", e.target.value)}
+                    className={styles.select}
+                    required
+                  >
+
+                    <option value="" disabled>Medio de pago</option>
+
+                    {mediosPago.map(m => (
+                      <option key={m.value} value={m.value}>{m.label}</option>
+                    ))}
+
+                  </select>
+
+                  <input
+                    type="number"
+                    placeholder="Monto"
+                    value={pago.monto || ""}
+                    required
+                    onChange={(e) => updatePago(index, "monto", Number(e.target.value))}
+                  />
+
+                  <label>A cobrar: ${aCobrar}</label>
+
+                  <input
+                    type="number"
+                    placeholder="% al pago"
+                    value={pago.agregadoMedio || ""}
+                    onChange={(e)=>updatePago(index,"agregadoMedio",Number(e.target.value))}
+                  />
+
+                  <input
+                    type="number"
+                    placeholder="% al total"
+                    value={pago.agregadoTotal || ""}
+                    onChange={(e)=>updatePago(index,"agregadoTotal",Number(e.target.value))}
+                  />
+
+                  <input
+                    type="datetime-local"
+                    value={pago.fechaPago?.substring(0,16)}
+                    onChange={(e) => updatePago(index, "fechaPago", e.target.value)}
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Info"
+                    value={pago.info}
+                    onChange={(e) => updatePago(index, "info", e.target.value)}
+                  />
+
+                  <span style={{ cursor: "pointer" }} onClick={() => removePago(index)}>✕</span>
+
+                </div>
+
+              )
+
+            })}
+
+          </div>
+
+          <Button type="button" variant="outline-primary" onClick={addPago}>
+            Agregar pago
+          </Button>
+
+          <h5>
+            Total: ${totalPedidoFinal} | Pagado: ${totalPagos} | Restante: ${restante}
           </h5>
 
           <div className={styles.buttonContainer}>
@@ -407,8 +474,13 @@ useEffect(() => {
               Confirmar
             </Button>
           </div>
+
         </form>
+
       </div>
+
     </div>
+
   );
+
 };

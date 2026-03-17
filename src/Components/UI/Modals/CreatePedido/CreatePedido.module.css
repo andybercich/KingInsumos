@@ -9,118 +9,147 @@
     justify-content: center;
     align-items: center;
     z-index: 999;
-  }
+}
 
 .modalUser {
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 3vh;
-    width: 80%;
-    height: 85%;
+    justify-content: flex-start;
+    gap: 2vh;
+    width: 95%;
+    max-height: 90%;
     border-radius: 0.5rem;
+    overflow-y: auto;
     position: relative;
+    padding: 1rem;
+}
+
+.titulo {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1.8rem;
+    font-weight: bold;
 }
 
 .divClose {
-  position: absolute;
-  top: 2px;
-  right: 10px;
-  cursor: pointer;
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    cursor: pointer;
 }
 
-.titulo{
-  position: absolute;
-  top: 5px;
-
+.formularios {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    padding-bottom: 1rem;
 }
 
-.formularios{
-  margin-left: 5px;
-  margin-right: 5px;
-  width: 100%;
-  height: 85%;
-  display: flex;
-  flex-direction: column;
-  margin-top: 3.5rem;
-  align-items: center;
-  justify-content: center;
-}
-
-.formularios input{
-  outline: none;
-  width: 95%;
-  background-color: #e7e6e6;
-  border-radius: 7px;
-  height: 2.5rem;
-  transition: 300ms;
-}
-
-.formularios select{
-margin: 1rem;
-  outline: none;
-  width: 25%;
-  background-color: #e7e6e6;
-  border-radius: 7px;
-  height: 2rem;
-  transition: 300ms;
-}
-
-.formularios select:hover{
-
-  cursor: pointer;
-  background-color: #ffffff;
+.formularios input {
+    outline: none;
+    width: 95%;
+    background-color: #e7e6e6;
+    border-radius: 7px;
+    height: 2.5rem;
+    transition: 300ms;
+    padding: 0 0.5rem;
 }
 
 .formularios input:hover {
-  cursor: pointer;
-  background-color: #ffffff;
-  
+    cursor: pointer;
+    background-color: #ffffff;
 }
 
-.inputsMains{
+.formularios select {
+    margin: 0.5rem 0;
+    outline: none;
+    width: 25%;
+    background-color: #e7e6e6;
+    border-radius: 7px;
+    height: 2rem;
+    transition: 300ms;
+    padding: 0 0.3rem;
+}
+
+.formularios select:hover {
+    cursor: pointer;
+    background-color: #ffffff;
+}
+
+.inputsMains {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
+    width: 95%;
 }
 
-.productoContainer{
-    width: 95%;
-    height: 60%;
+
+.productoContainer {
+    width: 100%;
+    height: 20rem;
+    max-height: 20rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-}
-.chekPagado{
-  display: flex;
-  flex-direction: row;
-  width: 20%;
-  text-align: center;
-}
-
-.chekPagado input{
-  width: 2rem;
-  height: 2rem;
-  color: blue;
+    gap: 1rem;
+    margin-top: 3rem;
 }
 
 .detallePedidoContainer {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column; 
-    justify-content: flex-start;
-    align-items: center; 
-    gap: 1rem; 
     width: 100%;
-    height: 70%;
-    max-height: 70%;
+    max-height: 40vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
     overflow-y: auto;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 
+.pagosContainer {
+    width: 100%;
+    height: 10rem;
+    max-height: 10rem;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    border-radius: 5px;
+}
+
+
+
+.pagoCard {
+  display: grid;
+  justify-content: center;
+  grid-template-columns: 1.3fr 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr; 
+  gap: 0.5rem;
+  align-items: center;  
+  width: 100%;
+}
+
+.pagoCard select,
+.pagoCard input {
+  width: 100%;  
+  box-sizing: border-box;  
+}
+
 .buttonContainer {
-  margin-top: 0.5rem;
+    margin-top: 0.5rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
