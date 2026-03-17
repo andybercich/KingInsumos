@@ -12,7 +12,6 @@ import org.example.Entities.Enum.MedioPago;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "OpcionesPago")
 @Data
@@ -22,41 +21,28 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 public class OpcionesPago extends Base {
 
-    @ManyToOne
-    private Pedido pedido;
+    private String info;
 
     @NotNull(message = "La opcion de pago debe tener una fecha")
-    protected LocalDateTime fechaPedido;
+    private LocalDateTime fechaPago;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "SE NECESITA UN MEDIO DE PAGO PARA CREAR UN MEDIO DE PAGO")
     private MedioPago medioPago;
 
-    @ManyToOne
-    private Envio envio;
-
     private BigDecimal pago;
 
-    private double agregado;
+    @ManyToOne
+    @JoinColumn(name = "pedido_id")
+    private Pedido pedido;
 
-    private double descontado;
-
-    public void calcularTotal(){
-
-        BigDecimal subtotal = BigDecimal.ZERO;
-        BigDecimal porcentajeAgregadoBD = BigDecimal.valueOf(agregado);
-        BigDecimal porcentajeDescontadoBD = BigDecimal.valueOf(descontado);
-        BigDecimal cien = BigDecimal.valueOf(100);
+    @ManyToOne
+    @JoinColumn(name = "envio_id")
+    private Envio envio;
 
 
-        BigDecimal descuentoCalculado = pago.multiply(porcentajeDescontadoBD)
-                .divide(cien, 2, RoundingMode.HALF_UP);
+    private int agregadoTotal = 0;
 
-        BigDecimal agregadoCalculado = pago.multiply(porcentajeAgregadoBD)
-                .divide(cien, 2, RoundingMode.HALF_UP);
+    private int agregadoMedio = 0;
 
-        subtotal = pago.subtract(descuentoCalculado).add(agregadoCalculado);
-
-        this.pago = subtotal;
-    }
 }

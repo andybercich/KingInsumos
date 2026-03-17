@@ -20,7 +20,7 @@ public class ProductoDTO {
 
     private Long id;
 
-    private Long codigo;
+    private String codigo;
 
     private String nombre;
 

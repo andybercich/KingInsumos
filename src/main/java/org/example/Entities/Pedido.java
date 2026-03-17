@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 @Entity
 @Table(name = "Pedido")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -24,7 +23,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class Pedido extends  Base{
+public class Pedido extends Base {
 
     @NotNull(message = "Ingresa un cliente para el pedido")
     @NotBlank(message = "Ingresa un cliente para el pedido")
@@ -32,47 +31,61 @@ public class Pedido extends  Base{
 
     private String contacto;
 
-    private BigDecimal adelanto;
+    // private BigDecimal adelanto;
 
-    @Enumerated(EnumType.STRING)
-    protected MedioPago medioPago;
+    // @Enumerated(EnumType.STRING)
+    // protected MedioPago medioPago;
+    // Redundante si ahora existen múltiples pagos
 
     protected BigDecimal total;
 
-    @OneToMany(mappedBy = "pedido", orphanRemoval = true)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     protected List<DetallePedido> detalles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "pedido", orphanRemoval = true)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     protected List<OpcionesPago> opcionesPagos = new ArrayList<>();
 
     private BigDecimal ganancia;
 
-    private boolean pagadoTotalmente = false;
-
     protected LocalDateTime fechaPedido;
 
-    public void setTime (){
+    public void setTime() {
         this.fechaPedido = LocalDateTime.now();
     }
 
-    public void calculateTotal(){
-        BigDecimal total = BigDecimal.valueOf(0.0);
-        if (detalles.isEmpty() ){
+    public void calculateTotal() {
+        BigDecimal total = BigDecimal.ZERO;
 
-            this.total = total;
-        }else {
-
+        if (!detalles.isEmpty()) {
             total = detalles.stream()
-                    .map(detalle -> detalle.getSubTotal())
+                    .map(DetallePedido::getSubTotal)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-
-
-            this.total = total;
-
         }
+
+        BigDecimal extraTotal = BigDecimal.ZERO;
+
+        if (opcionesPagos != null && !opcionesPagos.isEmpty()) {
+            extraTotal = opcionesPagos.stream()
+                    .map(op -> {
+
+                        BigDecimal monto = op.getPago() != null
+                                ? op.getPago()
+                                : BigDecimal.ZERO;
+
+                        int porcentaje = op.getAgregadoMedio() != 0
+                                ? op.getAgregadoMedio()
+                                : op.getAgregadoTotal();
+
+                        if (porcentaje == 0) return BigDecimal.ZERO;
+
+                        return monto
+                                .multiply(BigDecimal.valueOf(porcentaje))
+                                .divide(BigDecimal.valueOf(100));
+                    })
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+
+        this.total = total.add(extraTotal);
     }
-
-
 
 }

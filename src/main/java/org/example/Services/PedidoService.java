@@ -3,9 +3,11 @@ package org.example.Services;
 import org.example.Entities.DTO.PaginaPedidoDTO;
 import org.example.Entities.DTO.PedidoDTO;
 import org.example.Entities.DetallePedido;
+import org.example.Entities.OpcionesPago;
 import org.example.Entities.Pedido;
 import org.example.Entities.Producto;
 import org.example.Repositories.DetallePedidoRepository;
+import org.example.Repositories.OpcionesPagoRepository;
 import org.example.Repositories.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,11 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class PedidoService extends BaseService<Pedido, Long, org.example.Repositories.PedidoRepository>{
@@ -32,12 +31,20 @@ public class PedidoService extends BaseService<Pedido, Long, org.example.Reposit
     @Autowired
     private DetallePedidoRepository detallePedidoRepository;
 
+    @Autowired
+    private OpcionesPagoRepository opcionesPagoRepository;
+
+    @Transactional
     public boolean deleteByIdSinStock(Long id){
         try {
             Pedido pedido = repository.findById(id).orElseThrow();
 
             for (DetallePedido d : detallePedidoRepository.findByPedidoId(pedido.getId())) {
                 detallePedidoRepository.deleteById(d.getId());
+            }
+
+            for (OpcionesPago p : opcionesPagoRepository.findByPedidoId(pedido.getId())) {
+                opcionesPagoRepository.deleteById(p.getId());
             }
 
             repository.deleteById(id);
@@ -57,6 +64,9 @@ public class PedidoService extends BaseService<Pedido, Long, org.example.Reposit
                 detallePedidoService.deleteById(d.getId());
             }
 
+            for (OpcionesPago p : opcionesPagoRepository.findByPedidoId(pedido.getId())) {
+                opcionesPagoRepository.deleteById(p.getId());
+            }
             repository.deleteById(id);
             return true;
 
@@ -65,118 +75,103 @@ public class PedidoService extends BaseService<Pedido, Long, org.example.Reposit
         }
     }
 
+
     @Override
-    public Pedido save(Pedido newPedido){
-        try{
-            BigDecimal ganancia = BigDecimal.valueOf(0L);
-            List<DetallePedido> detallePedidos = newPedido.getDetalles();
-            for (DetallePedido d : detallePedidos){
-                d.setProducto(productoRepository.getReferenceById(d.getProducto().getId()));
-                d.setPedido(newPedido);
-                d.calculateSubTotal();
-                if (Objects.equals(d.getProducto().getPrecioCompra(), BigDecimal.valueOf(0L))){
-                    ganancia =ganancia.add(d.getSubTotal());
-                }else {
-                    BigDecimal precioCompra = d.getProducto().getPrecioCompra();
-                    BigDecimal cantidad = BigDecimal.valueOf(d.getCantidad());
-                    BigDecimal subTotal = d.getSubTotal();
+    @Transactional
+    public Pedido save(Pedido pedido) {
 
-                    ganancia =ganancia.add(subTotal.subtract(cantidad.multiply(precioCompra)));
+        for (DetallePedido d : pedido.getDetalles()) {
 
-                }
+            Producto producto = productoRepository.findById(d.getProducto().getId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+
+
+            if (producto.getStock() < d.getCantidad()) {
+                throw new RuntimeException("Stock insuficiente para el producto: " + producto.getNombre());
             }
 
-            if (!newPedido.isPagadoTotalmente() && newPedido.getOpcionesPagos().isEmpty()){
-                throw new RuntimeException("El pedido no puede no estar totalmente pagado y no tener adelanto ");
-            }
+            producto.setStock(producto.getStock() - d.getCantidad());
+            productoRepository.save(producto);
 
-            newPedido.setDetalles(detallePedidos);
-            newPedido.calculateTotal();
-            newPedido.setGanancia(ganancia);
-            newPedido.setTime();
-            repository.save(newPedido);
-
-            for (DetallePedido d : detallePedidos){
-                detallePedidoService.save(d);
-            }
-
-
-            return newPedido;
-        }catch (Exception e){
-            throw new RuntimeException("Error al crear pedido: "+ e.getMessage());
+            d.setPedido(pedido);
+            d.setProducto(producto);
+            d.calculateSubTotal();
         }
 
+        if (pedido.getOpcionesPagos() == null || pedido.getOpcionesPagos().isEmpty()) {
+            throw new RuntimeException("Debe ingresar al menos una opción de pago para el envío");
+        }
 
+        System.out.println(pedido.getOpcionesPagos());
+        for (OpcionesPago op : pedido.getOpcionesPagos()) {
+            op.setPedido(pedido);
+        }
 
+        pedido.calculateTotal();
+        pedido.setTime();
+
+        return repository.save(pedido);
     }
 
     @Override
     @Transactional
-    public Pedido update(Long id, Pedido updatePedido) {
-        try {
-            Pedido existingPedido = repository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + id));
+    public Pedido update(Long id, Pedido nuevoPedido) {
 
-            List<DetallePedido> detallesDB = detallePedidoRepository.findByPedidoId(existingPedido.getId());
+        Pedido pedidoExistente = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
 
-            Map<Long, DetallePedido> nuevosDetallesMap = new HashMap<>();
-            List<DetallePedido> nuevos = new ArrayList<>();
-            for (DetallePedido d : updatePedido.getDetalles()) {
-                if (d.getId() != null) {
-                    nuevosDetallesMap.put(d.getId(), d);
-                } else {
-                    nuevos.add(d);
-                }
-            }
+        for (DetallePedido dViejo : pedidoExistente.getDetalles()) {
 
-            for (DetallePedido viejo : detallesDB) {
+            Producto producto = productoRepository.findById(dViejo.getProducto().getId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-                if (!nuevosDetallesMap.containsKey(viejo.getId())) {
-                    detallePedidoService.deleteById(viejo.getId());
-                }
-            }
-
-            BigDecimal ganancia = BigDecimal.valueOf(0L);
-
-            for (DetallePedido d : updatePedido.getDetalles()) {
-                d.setPedido(existingPedido);
-                d.setProducto(productoRepository.getReferenceById(d.getProducto().getId()));
-                d.calculateSubTotal();
-
-                if (Objects.equals(d.getProducto().getPrecioCompra(), BigDecimal.valueOf(0L))){
-                    ganancia = ganancia.add(d.getSubTotal());
-                } else {
-                    BigDecimal precioCompra = d.getProducto().getPrecioCompra();
-                    BigDecimal cantidad = BigDecimal.valueOf(d.getCantidad());
-                    BigDecimal subTotal = d.getSubTotal();
-
-                    ganancia = ganancia.add(subTotal.subtract(cantidad.multiply(precioCompra)));
-                }
-
-
-                if (d.getId() != null && detallePedidoRepository.existsById(d.getId())) {
-                    detallePedidoService.update(d.getId(), d);
-                } else {
-                    detallePedidoService.save(d);
-                }
-            }
-
-            if (updatePedido.isPagadoTotalmente() && !existingPedido.isPagadoTotalmente()){
-                existingPedido.setTime();
-                existingPedido.setPagadoTotalmente(updatePedido.isPagadoTotalmente());
-            }
-
-            existingPedido.setCliente(updatePedido.getCliente());
-            existingPedido.setMedioPago(updatePedido.getMedioPago());
-            existingPedido.setGanancia(ganancia);
-            existingPedido.setContacto(updatePedido.getContacto());
-            existingPedido.calculateTotal();
-
-            return repository.saveAndFlush(existingPedido);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Error al actualizar el pedido: " + e.getMessage(), e);
+            producto.setStock(producto.getStock() + dViejo.getCantidad());
+            productoRepository.save(producto);
         }
+
+        pedidoExistente.getDetalles().clear();
+        pedidoExistente.getOpcionesPagos().clear();
+
+        for (DetallePedido d : nuevoPedido.getDetalles()) {
+
+            Producto producto = productoRepository.findById(d.getProducto().getId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+            if (producto.getStock() < d.getCantidad()) {
+                throw new RuntimeException("Stock insuficiente para el producto: " + producto.getNombre());
+            }
+
+            producto.setStock(producto.getStock() - d.getCantidad());
+            productoRepository.save(producto);
+
+            d.setPedido(pedidoExistente);
+            d.setProducto(producto);
+            d.calculateSubTotal();
+
+            pedidoExistente.getDetalles().add(d);
+
+        }
+
+        if (nuevoPedido.getOpcionesPagos() == null || nuevoPedido.getOpcionesPagos().isEmpty()) {
+            throw new RuntimeException("Debe ingresar al menos una opción de pago para el pedido");
+        }
+
+        System.out.println(nuevoPedido.getOpcionesPagos());
+
+        for (OpcionesPago op : nuevoPedido.getOpcionesPagos()) {
+
+            op.setPedido(pedidoExistente);
+            pedidoExistente.getOpcionesPagos().add(op);
+
+        }
+
+        pedidoExistente.setTime();
+        pedidoExistente.calculateTotal();
+        pedidoExistente.setContacto(nuevoPedido.getContacto());
+        pedidoExistente.setCliente(nuevoPedido.getCliente());
+
+        return repository.save(pedidoExistente);
     }
 
     public List<Pedido> buscarPorClienteOContacto(String param) {

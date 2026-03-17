@@ -24,7 +24,7 @@ public class BalanceController {
     private BalanceExcelService balanceExcelService;
 
 
-    //http://localhost:8080/exportar-informe?desde=2025-04-01T00:00:00&hasta=2025-04-20T23:59:59
+    //http://localhost:8081/exportar-informe?desde=2025-04-01T00:00:00&hasta=2025-04-20T23:59:59
     @GetMapping("/exportar-informe")
     public ResponseEntity<byte[]> exportarExcel(
             @RequestParam("desde") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime desde,
@@ -34,7 +34,8 @@ public class BalanceController {
             ByteArrayInputStream excel = balanceExcelService.exportarInforme(desde, hasta);
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=informe_financiero.xlsx");
+            headers.add("Content-Disposition",
+                    "attachment; filename=Informe " + desde.toLocalDate() + " a " + hasta.toLocalDate() + ".xlsx");
 
             return ResponseEntity.ok()
                     .headers(headers)

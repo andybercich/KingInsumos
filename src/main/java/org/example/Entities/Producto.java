@@ -1,6 +1,7 @@
 package org.example.Entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -20,8 +21,7 @@ import java.math.BigDecimal;
 public class Producto extends Base {
 
     @NotNull(message = "Ingresa un código para el producto")
-    @Column(unique = true)
-    private Long codigo;
+    private String codigo;
 
     @NotBlank(message = "Ingresa un nombre para el producto")
     @NotNull(message = "Ingresa un nombre para el producto")
@@ -42,11 +42,12 @@ public class Producto extends Base {
     private BigDecimal precioVenta;
 
     @NotNull(message = "El valor de precio compra no puede ser null")
-    @Builder.Default
     private BigDecimal precioCompra = BigDecimal.valueOf(0);
 
+    @Min(value = 0, message = "El stock no puede ser negativo")
     private int stock;
 
+    @Min(value = 0, message = "El stock mínimo no puede ser negativo")
     private int stockMin;
 
     private boolean borrado;

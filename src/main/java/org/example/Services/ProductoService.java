@@ -1,6 +1,7 @@
 package org.example.Services;
 
 
+import org.example.Controllers.Specification.ProductoSpecification;
 import org.example.Entities.DTO.PaginaProductoDTO;
 import org.example.Entities.DTO.ProductoDTO;
 import org.example.Entities.Enum.Orden;
@@ -19,21 +20,10 @@ public class ProductoService extends BaseService<Producto,Long, ProductoReposito
 
 
 
-    public List<Producto> findProducto(String param) {
-        try {
-            String[] palabras = param.trim().toLowerCase().split("\\s+");
-
-            String palabra1 = palabras.length > 0 ? palabras[0] : "";
-            String palabra2 = palabras.length > 1 ? palabras[1] : "";
-
-            List<Producto> resultados = repository.buscarPorCodigoONombreAvanzado(param, palabra1, palabra2);
-
-            return resultados;
-
-        } catch (Exception e) {
-            throw new RuntimeException("No se pudo realizar la búsqueda del producto: " + e.getMessage(), e);
-        }
+    public List<Producto> buscarProductos(String texto) {
+        return repository.findAll(ProductoSpecification.buscar(texto));
     }
+
 
 
 
@@ -74,6 +64,14 @@ public class ProductoService extends BaseService<Producto,Long, ProductoReposito
     }
 
 
+    public boolean deleteById(Long id){
+        try {
 
+            repository.deleteById(id);
+            return true;
+        }catch (Exception e){
+            throw new RuntimeException("No se pudo eliminar el producto con id "+ id+": "+ e.getMessage());
+        }
+    }
 
 }

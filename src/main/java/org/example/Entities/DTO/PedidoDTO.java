@@ -8,46 +8,45 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 @Data
 public class PedidoDTO {
 
         private Long id;
         private String cliente;
         private BigDecimal total;
-        private boolean pagadoTotalmente = false;
-        private BigDecimal adelanto = BigDecimal.valueOf(0);
+        private boolean pagadoTotalmente;
         private LocalDateTime fechaPedido;
         private String contacto;
-        private String medioPago;
-        private List<DetallePedidoDTO> detalles;
 
+        private List<DetallePedidoDTO> detalles;
+        private List<OpcionesPagoDTO> opcionesPagos;
 
         public static PedidoDTO fromEntity(Pedido pedido) {
+
                 PedidoDTO dto = new PedidoDTO();
+
                 dto.setId(pedido.getId());
                 dto.setCliente(pedido.getCliente());
                 dto.setTotal(pedido.getTotal());
                 dto.setContacto(pedido.getContacto());
                 dto.setFechaPedido(pedido.getFechaPedido());
-                dto.setPagadoTotalmente(pedido.isPagadoTotalmente());
-                dto.setAdelanto(pedido.getAdelanto());
-                dto.setMedioPago(pedido.getMedioPago().toString());
-                dto.setDetalles(pedido.getDetalles().stream()
-                        .map(DetallePedidoDTO::fromEntity)
-                        .toList());
+
+                dto.setDetalles(
+                        pedido.getDetalles().stream()
+                                .map(DetallePedidoDTO::fromEntity)
+                                .toList()
+                );
+
+                dto.setOpcionesPagos(
+                        OpcionesPagoDTO.fromEntities(pedido.getOpcionesPagos())
+                );
+
                 return dto;
         }
 
-        public static List<PedidoDTO> fromEntitys (List<Pedido> pedidos){
-                List<PedidoDTO> pedidosDto = new ArrayList<>();
-
-                for (Pedido p : pedidos){
-
-                        pedidosDto.add(PedidoDTO.fromEntity(p));
-
-                }
-                return pedidosDto;
+        public static List<PedidoDTO> fromEntitys(List<Pedido> pedidos){
+                return pedidos.stream()
+                        .map(PedidoDTO::fromEntity)
+                        .toList();
         }
- }
-
+}

@@ -23,7 +23,7 @@ public class DetallePedidoService extends BaseService<DetallePedido, Long, Detal
             Producto producto = productoRepository.findById(detalle.getProducto().getId()).orElseThrow();
             producto.setStock(producto.getStock()+detalle.getCantidad());
             productoRepository.saveAndFlush(producto);
-
+            System.out.println("Stock del producto "+ producto.getNombre()+ " actualizado a "+ producto.getStock());
             repository.deleteById(id);
             return true;
         }catch (Exception e){

@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class ProductoDTOFind {
     private Long id;
-    private Long codigo;
+    private String codigo;
     private String nombre;
     private BigDecimal precioVenta;
     private String imagen;
